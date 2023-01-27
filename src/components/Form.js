@@ -117,7 +117,6 @@ class Form extends Component {
           onClick={ onSaveButtonClick }
         >
           Salvar
-
         </button>
       </form>
     );
