@@ -19,12 +19,14 @@ class App extends React.Component {
       cardTrunfo: false,
       hasTrunfo: false,
       isSaveButtonDisabled: true,
-      cardSaves: {},
+      cardSaves: [],
     };
   }
 
   onInputChange({ target }) {
-    const { name, value } = target;
+    const { name, type } = target;
+    const value = type === 'checkbox' ? target.checked : target.value;
+    if (type === 'checkbox') this.setState({ hasTrunfo: value });
     this.setState({
       [name]: value,
     }, this.buttonDisabled, this.onSaveButtonClick);
@@ -38,9 +40,12 @@ class App extends React.Component {
       cardAttr2,
       cardAttr3,
       cardImage,
-      cardSaves,
+      hasTrunfo,
+      cardTrunfo,
+      cardRare,
     } = this.state;
-    this.setState({
+
+    this.setState((oldState) => ({
       cardName: '',
       cardDescription: '',
       cardImage: '',
@@ -48,15 +53,19 @@ class App extends React.Component {
       cardAttr2: '0',
       cardAttr3: '0',
       cardRare: 'normal',
-      cardSaves: [cardSaves, {
+      isSaveButtonDisabled: true,
+      cardSaves: [...oldState.cardSaves, {
         cardName,
         cardDescription,
         cardAttr1,
         cardAttr2,
         cardAttr3,
         cardImage,
+        hasTrunfo,
+        cardTrunfo,
+        cardRare,
       }],
-    });
+    }));
   }
 
   buttonDisabled() {
@@ -101,6 +110,7 @@ class App extends React.Component {
       cardRare,
       cardTrunfo,
       isSaveButtonDisabled,
+      hasTrunfo,
       cardSaves,
     } = this.state;
     return (
@@ -116,6 +126,8 @@ class App extends React.Component {
           cardImage={ cardImage }
           cardRare={ cardRare }
           cardTrunfo={ cardTrunfo }
+          hasTrunfo={ hasTrunfo }
+          cardSaves={ cardSaves }
           isSaveButtonDisabled={ isSaveButtonDisabled }
         />
         <Card
@@ -128,6 +140,18 @@ class App extends React.Component {
           cardRare={ cardRare }
           cardTrunfo={ cardTrunfo }
         />
+        { cardSaves.map((e) => (
+          (<Card
+            key={ e.cardName }
+            cardName={ e.cardName }
+            cardDescription={ e.cardDescription }
+            cardAttr1={ e.cardAttr1 }
+            cardAttr2={ e.cardAttr2 }
+            cardAttr3={ e.cardAttr3 }
+            cardImage={ e.cardImage }
+            cardRare={ e.cardRare }
+            cardTrunfo={ e.cardTrunfo }
+          />)))}
       </div>
     );
   }
