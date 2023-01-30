@@ -8,6 +8,7 @@ class App extends React.Component {
     this.onInputChange = this.onInputChange.bind(this);
     this.buttonDisabled = this.buttonDisabled.bind(this);
     this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
+    this.removeCard = this.removeCard.bind(this);
     this.state = {
       cardName: '',
       cardDescription: '',
@@ -66,6 +67,13 @@ class App extends React.Component {
         cardRare,
       }],
     }));
+  }
+
+  removeCard(index) {
+    const { cardSaves } = this.state;
+    const newArray = [...cardSaves];
+    newArray.splice(index, 1);
+    this.setState({ cardSaves: newArray });
   }
 
   buttonDisabled() {
@@ -140,18 +148,31 @@ class App extends React.Component {
           cardRare={ cardRare }
           cardTrunfo={ cardTrunfo }
         />
-        { cardSaves.map((e) => (
-          (<Card
-            key={ e.cardName }
-            cardName={ e.cardName }
-            cardDescription={ e.cardDescription }
-            cardAttr1={ e.cardAttr1 }
-            cardAttr2={ e.cardAttr2 }
-            cardAttr3={ e.cardAttr3 }
-            cardImage={ e.cardImage }
-            cardRare={ e.cardRare }
-            cardTrunfo={ e.cardTrunfo }
-          />)))}
+        { cardSaves.map((e, index) => (
+          (
+            <>
+              <Card
+                key={ e.cardName }
+                cardName={ e.cardName }
+                cardDescription={ e.cardDescription }
+                cardAttr1={ e.cardAttr1 }
+                cardAttr2={ e.cardAttr2 }
+                cardAttr3={ e.cardAttr3 }
+                cardImage={ e.cardImage }
+                cardRare={ e.cardRare }
+                cardTrunfo={ e.cardTrunfo }
+              />
+              <button
+                key={ `${e.cardName}KEY` }
+                onClick={ () => this.removeCard(index) }
+                data-testid="delete-button"
+              >
+                Excluir
+
+              </button>
+            </>
+          )
+        ))}
       </div>
     );
   }
