@@ -20,6 +20,9 @@ class App extends React.Component {
       cardTrunfo: false,
       hasTrunfo: false,
       isSaveButtonDisabled: true,
+      filterName: '',
+      filterRare: 'todas',
+      filterTrunfo: false,
       cardSaves: [],
     };
   }
@@ -27,7 +30,7 @@ class App extends React.Component {
   onInputChange({ target }) {
     const { name, type } = target;
     const value = type === 'checkbox' ? target.checked : target.value;
-    if (type === 'checkbox') this.setState({ hasTrunfo: value });
+    if (name === 'cardTrunfo') this.setState({ hasTrunfo: value });
     this.setState({
       [name]: value,
     }, this.buttonDisabled, this.onSaveButtonClick);
@@ -55,6 +58,8 @@ class App extends React.Component {
       cardAttr3: '0',
       cardRare: 'normal',
       isSaveButtonDisabled: true,
+      hasTrunfo: false,
+      cardTrunfo: false,
       cardSaves: [...oldState.cardSaves, {
         cardName,
         cardDescription,
@@ -120,7 +125,34 @@ class App extends React.Component {
       isSaveButtonDisabled,
       hasTrunfo,
       cardSaves,
+      filterName,
+      filterRare,
+      filterTrunfo,
     } = this.state;
+
+    const cardsElements = cardSaves.map((e, index) => (
+      <div key={ e.cardName + e.cardAttr1 + index }>
+        <Card
+          key={ e.cardName + e.cardAttr1 + index }
+          cardName={ e.cardName }
+          cardDescription={ e.cardDescription }
+          cardAttr1={ e.cardAttr1 }
+          cardAttr2={ e.cardAttr2 }
+          cardAttr3={ e.cardAttr3 }
+          cardImage={ e.cardImage }
+          cardRare={ e.cardRare }
+          cardTrunfo={ e.cardTrunfo }
+        />
+        <button
+          key={ e.cardImage.toString() + index }
+          onClick={ () => this.removeCard(index) }
+          data-testid="delete-button"
+        >
+          Excluir
+        </button>
+      </div>
+    ));
+
     return (
       <div>
         <Form
@@ -148,31 +180,55 @@ class App extends React.Component {
           cardRare={ cardRare }
           cardTrunfo={ cardTrunfo }
         />
-        { cardSaves.map((e, index) => (
-          (
-            <>
-              <Card
-                key={ e.cardName }
-                cardName={ e.cardName }
-                cardDescription={ e.cardDescription }
-                cardAttr1={ e.cardAttr1 }
-                cardAttr2={ e.cardAttr2 }
-                cardAttr3={ e.cardAttr3 }
-                cardImage={ e.cardImage }
-                cardRare={ e.cardRare }
-                cardTrunfo={ e.cardTrunfo }
-              />
-              <button
-                key={ `${e.cardName}KEY` }
-                onClick={ () => this.removeCard(index) }
-                data-testid="delete-button"
-              >
-                Excluir
+        <label htmlFor="name-filter">
+          Filtro de busca:
+          <input
+            disabled={ filterTrunfo }
+            type="text"
+            data-testid="name-filter"
+            id="name-filter"
+            name="filterName"
+            onChange={ this.onInputChange }
+            value={ filterName }
+          />
+        </label>
+        {/* .props.children[0].props.cardName */}
+        <select
+          onChange={ this.onInputChange }
+          name="filterRare"
+          value={ filterRare }
+          data-testid="rare-filter"
+          disabled={ filterTrunfo }
+        >
+          <option>todas</option>
+          <option>normal</option>
+          <option>raro</option>
+          <option>muito raro</option>
+        </select>
+        <label htmlFor="filterTrunfo">
+          Super Trybe Trunfo
+          <input
+            type="checkbox"
+            data-testid="trunfo-filter"
+            name="filterTrunfo"
+            id="filterTrunfo"
+            checked={ filterTrunfo }
+            onChange={ this.onInputChange }
+          />
+        </label>
+        { filterName || filterRare !== 'todas'
+        || filterTrunfo ? cardsElements.filter((e) => {
+            const rare = e.props.children[0].props.cardRare;
+            const name = e.props.children[0].props.cardName;
+            const case1 = name.toUpperCase().includes(filterName.toUpperCase());
+            let case2 = rare.toUpperCase() === filterRare.toUpperCase();
+            let case3 = e.props.children[0].props.cardTrunfo;
+            if (filterRare === 'todas') case2 = true;
+            if (filterTrunfo === false) case3 = true;
+            const verify = case1 && case2 && case3;
+            return verify;
+          }) : cardsElements }
 
-              </button>
-            </>
-          )
-        ))}
       </div>
     );
   }

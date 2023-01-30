@@ -1,0 +1,11 @@
+<label htmlFor="filterTrunfo">
+          Super Trybe Trunfo
+          <input
+            type="checkbox"
+            data-testid="trunfo-filter"
+            name="filterTrunfo"
+            id="filterTrunfo"
+            checked={ filterTrunfo }
+            onChange={ this.onInputChange }
+          />
+        </label>

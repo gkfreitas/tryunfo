@@ -112,7 +112,8 @@ class Form extends Component {
             <option value="muito raro">Muito raro</option>
           </select>
         </label>
-        { cardSaves.some((e) => e.hasTrunfo)
+        { hasTrunfo }
+        { cardSaves?.some((e) => e.hasTrunfo)
           ? '"Você já tem um Super Trunfo em seu baralho"' : labelEl}
         <button
           type="button"
